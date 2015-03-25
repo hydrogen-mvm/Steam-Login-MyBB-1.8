@@ -47,11 +47,11 @@ function steamlogin_info()
 		"name"			=> "Steam Login",
 		"description"	=> "Allows the registration of accounts through Steam. (For support/issues please visit https://github.com/stewartiee/Steam-OpenID--MyBB-)$curl_message",
 		"website"		=> "http://www.calculator.tf",
-		"author"		=> "Ryan Stewart and Tatsuto (with edits by IceMan)",
+		"author"		=> "Ryan Stewart",
 		"authorsite"	=> "http://www.calculator.tf",
-		"version"		=> "1.8",
+		"version"		=> "1.6",
 		"guid" 			=> "",
-		"compatibility" => "18*"
+		"compatibility" => "*"
 	);
 
 } // close function steamlogin_info
@@ -175,6 +175,12 @@ function steamlogin_activate()
             <strong>Steam Verified</strong>
         </td>
         <td class="trow1">{$steam_verified}</td>
+    </tr>
+	<tr>
+        <td class="trow1" width="40%">
+            <strong>Steam Status</strong>
+        </td>
+        <td class="trow1">{$steam_status}</td>
     </tr>
     <tr>
         <td class="trow1" width="40%">
@@ -535,7 +541,9 @@ function steamify_user_profile()
     $steamid_64 = 'N/A';
     $steamid_32 = 'N/A';
     $steamrep_link = 'N/A';
+	$steam_status = 'N/A';
     $steam_level = '?';
+	$pd2stats_link = '?';
 
     // Check to see if loginname is empty, and make sure it's numeric.
     if($user_details['loginname'] != null and is_numeric($user_details['loginname']))
@@ -550,6 +558,9 @@ function steamify_user_profile()
 
         $steam_verified = 'Yes';
 
+		// Get our steam status
+        $steam_status = '<a href="http://www.steamcommunity.com/profiles/'.$steamid_64.'" target="_blank"><img src="http://steamsignature.com/status/english/'.$steamid_64.'.png" /></a><a href="steam://friends/add/'.$steamid_64.'"><img src="http://steamsignature.com/AddFriend.png"></a>';
+		
         // Create a link for SteamRep.
         $steamrep_link = '<a href="http://www.steamrep.com/profiles/'.$steamid_64.'" target="_blank">www.steamrep.com/profiles/'.$steamid_64.'</a>';
 
