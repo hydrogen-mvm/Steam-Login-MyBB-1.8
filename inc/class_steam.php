@@ -97,8 +97,7 @@ class steam {
             {
 
                 $player_info = $info_array['response']['players'][0];
-
-                $personaname = $player_info['personaname'];
+                $personaname = htmlentities(stripslashes($player_info["personaname"]));
                 $profileurl = $player_info['profileurl'];
                 $avatar_s = $player_info['avatar'];
                 $avatar_m = $player_info['avatarmedium'];

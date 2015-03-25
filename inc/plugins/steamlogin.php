@@ -4,7 +4,6 @@
  * ----------------------------------
  * Provided with no warranties by Ryan Stewart (www.calculator.tf)
  * This has been tested on MyBB 1.6
- * This has been fixed and tested for MyBB 1.8 by IceMan (www.tf2.ro)
  */
  
 // Disallow direct access to this file for security reasons
@@ -20,6 +19,7 @@ $plugins->add_hook("no_permission", "steam_redirect", "newreply.php");
 $plugins->add_hook("no_permission", "steam_redirect", "newthread.php");
 $plugins->add_hook("member_profile_start", "steamify_user_profile");
 $plugins->add_hook("usercp_password", "steam_account_linked");
+$plugins->add_hook("usercp_email", "steam_account_linked");
 $plugins->add_hook("usercp_email", "steam_account_linked");
 
 
@@ -47,11 +47,11 @@ function steamlogin_info()
 		"name"			=> "Steam Login",
 		"description"	=> "Allows the registration of accounts through Steam. (For support/issues please visit https://github.com/stewartiee/Steam-OpenID--MyBB-)$curl_message",
 		"website"		=> "http://www.calculator.tf",
-		"author"		=> "Ryan Stewart & IceMan",
+		"author"		=> "Ryan Stewart and Tatsuto (with edits by IceMan)",
 		"authorsite"	=> "http://www.calculator.tf",
-		"version"		=> "1.6.1",
+		"version"		=> "1.8",
 		"guid" 			=> "",
-		"compatibility" => "16, 18"
+		"compatibility" => "18*"
 	);
 
 } // close function steamlogin_info
@@ -118,9 +118,9 @@ function steamlogin_activate()
         "title" => "Avatar Size",
         "description" => "Set whether to use the small, medium or large avatar from the Steam API.",
         "optionscode" => "select
-        0=Small
-        1=Medium
-        2=Large",
+0=Small
+1=Medium
+2=Large",
         "value" => "2",
         "disporder" => 4,
         "gid" => $gid
@@ -164,7 +164,46 @@ function steamlogin_activate()
     $plugin_templates = array(
         "tid" => NULL,
         "title" => 'steamlogin_profile_block',
-        "template" => $db->escape_string('<br /><table border="0" cellspacing="{$theme[\'borderwidth\']}" cellpadding="{$theme[\'tablespace\']}" class="tborder"><tr><td colspan="2" class="thead"><strong>Steam Details</strong></td></tr><tr><td class="trow1" width="40%"><strong>Steam Verified</strong></td><td class="trow1">{$steam_verified}</td></tr><tr><td class="trow1" width="40%"><strong>Level</strong></td><td class="trow1">{$steam_level}</td></tr><tr><td class="trow1" width="40%"><strong>SteamID 32</strong></td><td class="trow1">{$steamid_32}</td></tr><tr><td class="trow1" width="40%"><strong>SteamID 64</strong></td><td class="trow1"><a href="http://www.steamcommunity.com/profiles/{$steamid_64}" target="_blank">http://www.steamcommunity.com/profiles/{$steamid_64}</a></td></tr><tr><td class="trow1" width="40%"><strong>SteamRep</strong></td><td class="trow1">{$steamrep_link}</td></tr><tr><td class="trow1" width="40%"><strong>Steam Status</strong></td><td class="trow1">{$steam_status}</td></tr></table><br />'),
+        "template" => $db->escape_string('<br /><table border="0" cellspacing="{$theme[\'borderwidth\']}" cellpadding="{$theme[\'tablespace\']}" class="tborder">
+    <tr>
+        <td colspan="2" class="thead">
+            <strong>Steam Details</strong>
+        </td>
+    </tr>
+    <tr>
+        <td class="trow1" width="40%">
+            <strong>Steam Verified</strong>
+        </td>
+        <td class="trow1">{$steam_verified}</td>
+    </tr>
+    <tr>
+        <td class="trow1" width="40%">
+            <strong>Level</strong>
+        </td>
+        <td class="trow1">{$steam_level}</td>
+    </tr>
+    <tr>
+        <td class="trow1" width="40%">
+            <strong>SteamID 32</strong>
+        </td>
+        <td class="trow1">{$steamid_32}</td>
+    </tr>
+    <tr>
+        <td class="trow1" width="40%">
+            <strong>SteamID 64</strong>
+        </td>
+        <td class="trow1">
+            <a href="http://www.steamcommunity.com/profiles/{$steamid_64}" target="_blank">www.steamcommunity.com/profiles/{$steamid_64}</a>
+        </td>
+    </tr>
+    <tr>
+        <td class="trow1" width="40%">
+            <strong>SteamRep</strong>
+        </td>
+        <td class="trow1">{$steamrep_link}</td>
+    </tr>
+</table>
+<br />'),
         "sid" => "-1",
         "version" => $mybb->version + 1,
         "dateline" => time()
@@ -360,7 +399,29 @@ function steam_output_to_misc() {
 
 					require_once MYBB_ROOT . "inc/datahandlers/user.php";
 					$userhandler = new UserDataHandler("insert");
-
+					
+					//Duplicate Username Edit
+					if(strlen($personaname)<5){$personaname = $personaname.'----';};
+					$returnids = ($db->simple_select('users', '*', "loginname='$steamid' and username='$personaname'"));
+					if($db->num_rows($returnids) == 0){
+					$returny = ($db->simple_select('users', '*', "username = '$personaname'"));
+					$loopnr = $db->num_rows($returny);
+					while($loopnr > 0){
+						$retnrch = $db->num_rows($returny); 
+						if ($regulov > 0)
+							{
+								$personaname = stristr($personaname, '(', true);
+								$personaname = $personaname.'('.($regulov+2).')';
+							} else {
+								$personaname = $personaname.' ('.($regulov+2).')';
+							};
+						$returny = ($db->simple_select('users', '*', "username = '$personaname'"));
+						$loopnr = $db->num_rows($returny);
+						$regulov++;
+					}
+					$regulov = 0;
+					};
+					
 					$new_user_data = array(
 						"username" => $personaname,
 						"password" => $password,
@@ -401,8 +462,31 @@ function steam_output_to_misc() {
                     // Do our checks for both username and avatar.
                     if($check_update_username['value'] == 1) $update['username'] = $personaname;
                     if($check_update_avatar['value'] == 1) $update['avatar'] = $avatar;
-
-                    // Run our update query if the array isn't empty.
+					$usenmupdrq = $update["username"];
+                    
+					//Duplicate Username Edit
+					if(strlen($personaname)<5){$personaname = $personaname.'----';};
+					$returnids = ($db->simple_select('users', '*', "loginname='$steamid' and username='$personaname'"));
+					if($db->num_rows($returnids) == 0){
+					$returny = ($db->simple_select('users', '*', "username = '$usenmupdrq'"));
+					$loopnr = $db->num_rows($returny);
+					while($loopnr > 0){
+						$retnrch = $db->num_rows($returny); 
+						if ($regulov > 0)
+							{
+								$update['username'] = stristr($update['username'], '(', true);
+								$update['username'] = $update['username'].'('.($regulov+2).')';
+							} else {
+							$update['username'] = $update['username'].' ('.($regulov+2).')';
+							};
+						$usenmupdrq = $update["username"];
+						$returny = ($db->simple_select('users', '*', "username = '$usenmupdrq'"));
+						$loopnr = $db->num_rows($returny);
+						$regulov++;
+					}
+					$regulov = 0;
+					};
+					// Run our update query if the array isn't empty.
                     if(!empty($update)) $db->update_query('users', $update, "loginname = '$steamid'");
 
 			    } // close else
@@ -410,8 +494,8 @@ function steam_output_to_misc() {
 			    $user = $db->fetch_array($db->simple_select("users", "*", "loginname = '$steamid'"));
 
 			    // Login the user.
-				my_setcookie("mybbuser", $user['uid']."_".$user['loginkey'], true, true);
-				my_setcookie("sid", $session->sid, -1, true);
+				my_setcookie("mybbuser", $user['uid']."_".$user['loginkey'], (60*60*24*90), true);
+				my_setcookie("sid", $session->sid, (60*60*24*90), true);
 
 				redirect("index.php", 'Your account has been authenticated and you have been logged in.<br/> Powered By <a href="http://www.steampowered.com" target="_blank">Steam</a>', 'Login via Steam');
 
@@ -452,7 +536,6 @@ function steamify_user_profile()
     $steamid_32 = 'N/A';
     $steamrep_link = 'N/A';
     $steam_level = '?';
-    $steam_status = 'N/A';
 
     // Check to see if loginname is empty, and make sure it's numeric.
     if($user_details['loginname'] != null and is_numeric($user_details['loginname']))
@@ -468,10 +551,7 @@ function steamify_user_profile()
         $steam_verified = 'Yes';
 
         // Create a link for SteamRep.
-        $steamrep_link = '<a href="http://www.steamrep.com/profiles/'.$steamid_64.'" target="_blank">http://www.steamrep.com/profiles/'.$steamid_64.'</a>';
-
-        // Get our steam status
-        $steam_status = '<a href="http://www.steamcommunity.com/profiles/'.$steamid_64.'" target="_blank"><img src="http://steamsignature.com/status/english/'.$steamid_64.'.png" /></a><a href="steam://friends/add/'.$steamid_64.'"><img src="http://steamsignature.com/AddFriend.png"></a>';
+        $steamrep_link = '<a href="http://www.steamrep.com/profiles/'.$steamid_64.'" target="_blank">www.steamrep.com/profiles/'.$steamid_64.'</a>';
 
         eval("\$steamlogin_profile_block = \"".$templates->get("steamlogin_profile_block")."\";");
 
@@ -536,8 +616,9 @@ function fix_steam_username()
 {
 
     global $db, $mybb;
-
-    if($mybb->user['uid'] > 0 && $mybb->usergroup['cancp'])
+	//seems to check if user is logged in and admin. occasionally glitches out. for users that arent admin. thus it may run when people arnet admins. not sure.
+//if user is admin //previously  if($mybb->user['uid'] > 0 && $mybb->usergroup['cancp'])
+    if($mybb->usergroup['cancp'])
     {
 
         if($mybb->input['action'] == 'fix_steam_username')
@@ -591,7 +672,7 @@ function fix_steam_username()
 
         }
 
-    } else { // close if($mybb->user['uid'] > 0)
+    } else { // close if user is not admin.
 
         die("You shouldn't be here...");
 
