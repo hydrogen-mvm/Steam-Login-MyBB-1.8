@@ -543,7 +543,6 @@ function steamify_user_profile()
     $steamrep_link = 'N/A';
 	$steam_status = 'N/A';
     $steam_level = '?';
-	$pd2stats_link = '?';
 
     // Check to see if loginname is empty, and make sure it's numeric.
     if($user_details['loginname'] != null and is_numeric($user_details['loginname']))
