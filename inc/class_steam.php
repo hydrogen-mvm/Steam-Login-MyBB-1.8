@@ -99,6 +99,8 @@ class steam {
                 $player_info = $info_array['response']['players'][0];
                 $personaname = stripslashes(json_encode(htmlentities($player_info["personaname"])));
                 $personaname = substr($personaname,1,-1);
+                $personaname = str_replace("'", "´", $personaname);
+		$personaname = str_replace('"', '´', $personaname);
                 $profileurl = $player_info['profileurl'];
                 $avatar_s = $player_info['avatar'];
                 $avatar_m = $player_info['avatarmedium'];
