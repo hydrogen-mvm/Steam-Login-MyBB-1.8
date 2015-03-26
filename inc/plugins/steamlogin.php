@@ -389,9 +389,6 @@ function steam_output_to_misc() {
                 // Check the avatar size set in the database.
                 if($check_avatar_size['value'] == '0') $avatar = $steam_info['avatars']['small'];
                 if($check_avatar_size['value'] == '2') $avatar = $steam_info['avatars']['large'];
-	        	
-			    $personaname = strip_tags($personaname);//This is so people can not use tags that display.
-	        	$personaname = $db->escape_string($personaname);
 			
 		        // Perform a check to see if the user already exists in the database.
 		        $user_check = $db->num_rows($db->simple_select("users", "*", "loginname = '$steamid'"));
