@@ -164,52 +164,52 @@ function steamlogin_activate()
     $plugin_templates = array(
         "tid" => NULL,
         "title" => 'steamlogin_profile_block',
-        "template" => $db->escape_string('<br /><table border="0" cellspacing="{$theme[\'borderwidth\']}" cellpadding="{$theme[\'tablespace\']}" class="tborder">
-    <tr>
-        <td colspan="2" class="thead">
-            <strong>Steam Details</strong>
-        </td>
-    </tr>
-    <tr>
-        <td class="trow1" width="40%">
-            <strong>Steam Verified</strong>
-        </td>
-        <td class="trow1">{$steam_verified}</td>
-    </tr>
-	<tr>
-        <td class="trow1" width="40%">
-            <strong>Steam Status</strong>
-        </td>
-        <td class="trow1">{$steam_status}</td>
-    </tr>
-    <tr>
-        <td class="trow1" width="40%">
-            <strong>Level</strong>
-        </td>
-        <td class="trow1">{$steam_level}</td>
-    </tr>
-    <tr>
-        <td class="trow1" width="40%">
-            <strong>SteamID 32</strong>
-        </td>
-        <td class="trow1">{$steamid_32}</td>
-    </tr>
-    <tr>
-        <td class="trow1" width="40%">
-            <strong>SteamID 64</strong>
-        </td>
-        <td class="trow1">
-            <a href="http://www.steamcommunity.com/profiles/{$steamid_64}" target="_blank">www.steamcommunity.com/profiles/{$steamid_64}</a>
-        </td>
-    </tr>
-    <tr>
-        <td class="trow1" width="40%">
-            <strong>SteamRep</strong>
-        </td>
-        <td class="trow1">{$steamrep_link}</td>
-    </tr>
-</table>
-<br />'),
+        "template" => $db->escape_string('<br />
+		<table border="0" cellspacing="{$theme[\'borderwidth\']}" cellpadding="{$theme[\'tablespace\']}" class="tborder">
+			<tr>
+				<td colspan="2" class="thead">
+					<strong>Steam Details</strong>
+				</td>
+			</tr>
+			<tr>
+				<td class="trow1" width="40%">
+					<strong>Steam Verified</strong>
+				</td>
+				<td class="trow1">{$steam_verified}</td>
+			</tr>
+			<tr>
+				<td class="trow1" width="40%">
+					<strong>Steam Status</strong>
+				</td>
+				<td class="trow1">{$steam_status}</td>
+			</tr>
+			<tr>
+				<td class="trow1" width="40%">
+					<strong>Level</strong>
+				</td>
+				<td class="trow1">{$steam_level}</td>
+			</tr>
+			<tr>
+				<td class="trow1" width="40%">
+					<strong>SteamID 32</strong>
+				</td>
+				<td class="trow1">{$steamid_32}</td>
+			</tr>
+			<tr>
+				<td class="trow1" width="40%">
+					<strong>SteamID 64</strong>
+				</td>
+				<td class="trow1">
+					<a href="http://www.steamcommunity.com/profiles/{$steamid_64}" target="_blank">www.steamcommunity.com/profiles/{$steamid_64}</a>
+				</td>
+			</tr>
+			<tr>
+				<td class="trow1" width="40%">
+					<strong>SteamRep</strong>
+				</td>
+				<td class="trow1">{$steamrep_link}</td>
+			</tr>
+		</table><br />'),
         "sid" => "-1",
         "version" => $mybb->version + 1,
         "dateline" => time()
@@ -220,7 +220,27 @@ function steamlogin_activate()
     $plugin_templates = array(
         "tid" => NULL,
         "title" => 'steamlogin_feature_disabled',
-        "template" => $db->escape_string('<html><head><title>{$mybb->settings[\'bbname\']}</title>{$headerinclude}</head><body>{$header}<table border="0" cellspacing="{$theme[\'borderwidth\']}" cellpadding="{$theme[\'tablespace\']}" class="tborder"><tr><td colspan="2" class="thead"><strong>Feature Disabled</strong></td></tr><tr><td class="trow1" width="40%"><strong>This feature has been disabled on your account.</td></tr></table>{$footer}</body></html>'),
+        "template" => $db->escape_string('<html>
+		<head>
+			<title>{$mybb->settings[\'bbname\']}</title>
+		{$headerinclude}
+		</head>
+		<body>
+		{$header}
+			<table border="0" cellspacing="{$theme[\'borderwidth\']}" cellpadding="{$theme[\'tablespace\']}" class="tborder">
+				<tr>
+					<td colspan="2" class="thead">
+						<strong>Feature Disabled</strong>
+					</td>
+				</tr>
+				<tr>
+					<td class="trow1" width="40%">
+						<strong>This feature has been disabled on your account.</strong>
+					</td>
+				</tr>
+			</table>
+		{$footer}
+		</body></html>'),
         "sid" => "-1",
         "version" => $mybb->version + 1,
         "dateline" => time()
@@ -627,8 +647,8 @@ function fix_steam_username()
 {
 
     global $db, $mybb;
-	//seems to check if user is logged in and admin. occasionally glitches out. for users that arent admin. thus it may run when people arnet admins. not sure.
-//if user is admin //previously  if($mybb->user['uid'] > 0 && $mybb->usergroup['cancp'])
+	
+	//if user is admin
     if($mybb->usergroup['cancp'])
     {
 
