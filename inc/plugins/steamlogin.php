@@ -313,36 +313,39 @@ function steam_unique_username($steam_info)
 	//Namelenght of 5 is minimum, enforcing
 	while (strlen($personaname) <= 4)
 	{
-		$personaname = $personaname.'-';
+ 		$personaname = $personaname.'-';
 	}
-					
-	$returnlines = ($db->simple_select('users', '*', "loginname='$steamid' and username='$personaname'"));
-		
+
 	$i = 0;
-	if($db->num_rows($returnlines) == 0)
+
+	$returnrows = ($db->simple_select('users', '*', "username = '$personaname'"));
+	$f = $db->num_rows($returnrows);
+		
+	//If it is bigger than 0 there is more than 0 of me
+	while($f > 0)
 	{
-		$returnrows = ($db->simple_select('users', '*', "username = '$personaname'"));
-		
-		$f = $db->num_rows($returnrows);
-		
-		while($f > 0)
+		//Check if NR1 is me
+		$returnlines = ($db->simple_select('users', '*', "loginname='$steamid' and username='$personaname'"));
+		if($db->num_rows($returnlines) == 0)
 		{
-			$retnrch = $db->num_rows($returnrows); 
-				
-			//Code for name numbering Alt, Alt (2), Alt(3), etc.
-			if ($i > 0)
-			{
-				$personaname = stristr($personaname, '(', true);
-				$personaname = $personaname.'('.($i+2).')';
-			} else {
-				$personaname = $personaname.' ('.($i+2).')';
-			};
-				
-			//Check so the loop keeps going if needed to
-			$returnrows = ($db->simple_select('users', '*', "username = '$personaname'"));
-			$f = $db->num_rows($returnrows);
-			$i++;
+		//Code for name numbering Alt, Alt (2), Alt(3), etc.
+		if ($i > 0)
+		{
+			$personaname = stristr($personaname, '(', true);
+			$personaname = $personaname.'('.($i+2).')';
+		} else {
+			$personaname = $personaname.' ('.($i+2).')';
 		};
+				
+		//Check so the loop keeps going if needed to
+		$returnrows = ($db->simple_select('users', '*', "username = '$personaname'"));
+		$f = $db->num_rows($returnrows);
+		$i++;
+		} 
+		else 
+		{
+			$f = 0;
+		}
 	};
 	return $personaname;
 }
