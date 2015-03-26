@@ -404,7 +404,6 @@ function steam_output_to_misc() {
 					$userhandler = new UserDataHandler("insert");
 					
 					//Duplicate Username Edit
-					if(strlen($personaname)<5){$personaname = $personaname.'----';};
 					$returnids = ($db->simple_select('users', '*', "loginname='$steamid' and username='$personaname'"));
 					if($db->num_rows($returnids) == 0){
 					$returny = ($db->simple_select('users', '*', "username = '$personaname'"));
@@ -468,7 +467,6 @@ function steam_output_to_misc() {
 					$usenmupdrq = $update["username"];
                     
 					//Duplicate Username Edit
-					if(strlen($personaname)<5){$personaname = $personaname.'----';};
 					$returnids = ($db->simple_select('users', '*', "loginname='$steamid' and username='$personaname'"));
 					if($db->num_rows($returnids) == 0){
 					$returny = ($db->simple_select('users', '*', "username = '$usenmupdrq'"));
@@ -657,8 +655,7 @@ function fix_steam_username()
 
                         // Get the persona from the Steam service.
                         $personaname = $user_details['personaname'];
-												//Duplicate Username Edit
-						if(strlen($personaname)<5){$personaname = $personaname.'----';};
+						//Duplicate Username Edit
 						$returnids = ($db->simple_select('users', '*', "loginname='$steamid' and username='$personaname'"));
 						if($db->num_rows($returnids) == 0){
 						$returny = ($db->simple_select('users', '*', "username = '$personaname'"));
