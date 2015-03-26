@@ -657,6 +657,27 @@ function fix_steam_username()
 
                         // Get the persona from the Steam service.
                         $personaname = $user_details['personaname'];
+												//Duplicate Username Edit
+						if(strlen($personaname)<5){$personaname = $personaname.'----';};
+						$returnids = ($db->simple_select('users', '*', "loginname='$steamid' and username='$personaname'"));
+						if($db->num_rows($returnids) == 0){
+						$returny = ($db->simple_select('users', '*', "username = '$personaname'"));
+						$loopnr = $db->num_rows($returny);
+						while($loopnr > 0){
+							$retnrch = $db->num_rows($returny); 
+							if ($regulov > 0)
+								{
+									$personaname = stristr($personaname, '(', true);
+									$personaname = $personaname.'('.($regulov+2).')';
+								} else {
+								$personaname = $personaname.' ('.($regulov+2).')';
+								};
+							$returny = ($db->simple_select('users', '*', "username = '$personaname'"));
+							$loopnr = $db->num_rows($returny);
+							$regulov++;
+						}
+						$regulov = 0;
+						};
 
                         // Create an array of data to update.
                         $update = array();
