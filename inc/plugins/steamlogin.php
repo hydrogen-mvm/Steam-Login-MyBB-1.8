@@ -307,8 +307,14 @@ function steam_unique_username($steam_info)
 
 	global $db;
 	
-	$steamid = $steam_info['personaname'];
-	$personaname = $steam_info['steamid'];
+	$personaname = $steam_info['personaname'];
+	$steamid = $steam_info['steamid'];
+	
+	//Namelenght of 5 is minimum, enforcing
+	while (strlen($personaname) <= 4)
+	{
+		$personaname = $personaname.'-';
+	}
 					
 	$returnlines = ($db->simple_select('users', '*', "loginname='$steamid' and username='$personaname'"));
 		
