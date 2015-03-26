@@ -2,8 +2,8 @@
 /**
  * Steam Login
  * ----------------------------------
- * Provided with no warranties by Ryan Stewart (www.calculator.tf)
- * This has been tested on MyBB 1.6
+ * Provided with no warranties by Tatsuto (based on plugin by Ryan Stewart)
+ * This has been tested on MyBB 1.8
  */
  
 // Disallow direct access to this file for security reasons
@@ -45,13 +45,13 @@ function steamlogin_info()
 
 	return array(
 		"name"			=> "Steam Login",
-		"description"	=> "Allows the registration of accounts through Steam. (For support/issues please visit https://github.com/stewartiee/Steam-OpenID--MyBB-)$curl_message",
-		"website"		=> "http://www.calculator.tf",
-		"author"		=> "Ryan Stewart",
-		"authorsite"	=> "http://www.calculator.tf",
-		"version"		=> "1.6",
+		"description"	=> "Allows the registration of accounts through Steam. (For support/issues please visit http://www.lastbullet.net)$curl_message",
+		"website"		=> "http://www.lastbullet.net",
+		"author"		=> "Tatsuto",
+		"authorsite"	=> "http://www.lastbullet.net",
+		"version"		=> "1.8",
 		"guid" 			=> "",
-		"compatibility" => "*"
+		"compatibility" => "18*"
 	);
 
 } // close function steamlogin_info
