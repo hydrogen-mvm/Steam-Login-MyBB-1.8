@@ -273,8 +273,54 @@ function steamlogin_deactivate()
 
 } // close function steamlogin_deactivate
 
+/**
+ *
+ * Steam Unique Username - steam_unique_username
+ * - - - - - - - - - - - - - - -
+ * @desc Ensures that Usernames are unique otherwise the db will not accept them
+ * @since 1.8
+ * @version 1.8
+ *
+ */
+function steam_unique_username($steam_info)
+{
 
-
+	global $db;
+	
+	$steamid = $steam_info['personaname'];
+	$personaname = $steam_info['steamid'];
+					
+	$returnlines = ($db->simple_select('users', '*', "loginname='$steamid' and username='$personaname'"));
+		
+	$i = 0;
+	if($db->num_rows($returnlines) == 0)
+	{
+		$returnrows = ($db->simple_select('users', '*', "username = '$personaname'"));
+		
+		$f = $db->num_rows($returnrows);
+		
+		while($f > 0)
+		{
+			$retnrch = $db->num_rows($returnrows); 
+				
+			//Code for name numbering Alt, Alt (2), Alt(3), etc.
+			if ($i > 0)
+			{
+				$personaname = stristr($personaname, '(', true);
+				$personaname = $personaname.'('.($i+2).')';
+			} else {
+				$personaname = $personaname.' ('.($i+2).')';
+			};
+				
+			//Check so the loop keeps going if needed to
+			$returnrows = ($db->simple_select('users', '*', "username = '$personaname'"));
+			$f = $db->num_rows($returnrows);
+			$i++;
+		};
+	};
+	return $personaname;
+}
+ 
 /**
  *
  * Steam Redirect - steam_redirect
@@ -376,6 +422,9 @@ function steam_output_to_misc() {
 	        $steamid = end($return_explode);
 
 	        $steam_info = $steam->get_user_info($steamid);
+			
+			//Run username unique function
+			$steam_info['personaname'] = steam_unique_username($steam_info);
 
 	        // Check the status.
 	        if($steam_info['status'] == 'success')
@@ -402,27 +451,6 @@ function steam_output_to_misc() {
 
 					require_once MYBB_ROOT . "inc/datahandlers/user.php";
 					$userhandler = new UserDataHandler("insert");
-					
-					//Duplicate Username Edit
-					$returnids = ($db->simple_select('users', '*', "loginname='$steamid' and username='$personaname'"));
-					if($db->num_rows($returnids) == 0){
-					$returny = ($db->simple_select('users', '*', "username = '$personaname'"));
-					$loopnr = $db->num_rows($returny);
-					while($loopnr > 0){
-						$retnrch = $db->num_rows($returny); 
-						if ($regulov > 0)
-							{
-								$personaname = stristr($personaname, '(', true);
-								$personaname = $personaname.'('.($regulov+2).')';
-							} else {
-								$personaname = $personaname.' ('.($regulov+2).')';
-							};
-						$returny = ($db->simple_select('users', '*', "username = '$personaname'"));
-						$loopnr = $db->num_rows($returny);
-						$regulov++;
-					}
-					$regulov = 0;
-					};
 					
 					$new_user_data = array(
 						"username" => $personaname,
@@ -464,29 +492,7 @@ function steam_output_to_misc() {
                     // Do our checks for both username and avatar.
                     if($check_update_username['value'] == 1) $update['username'] = $personaname;
                     if($check_update_avatar['value'] == 1) $update['avatar'] = $avatar;
-					$usenmupdrq = $update["username"];
                     
-					//Duplicate Username Edit
-					$returnids = ($db->simple_select('users', '*', "loginname='$steamid' and username='$personaname'"));
-					if($db->num_rows($returnids) == 0){
-					$returny = ($db->simple_select('users', '*', "username = '$usenmupdrq'"));
-					$loopnr = $db->num_rows($returny);
-					while($loopnr > 0){
-						$retnrch = $db->num_rows($returny); 
-						if ($regulov > 0)
-							{
-								$update['username'] = stristr($update['username'], '(', true);
-								$update['username'] = $update['username'].'('.($regulov+2).')';
-							} else {
-							$update['username'] = $update['username'].' ('.($regulov+2).')';
-							};
-						$usenmupdrq = $update["username"];
-						$returny = ($db->simple_select('users', '*', "username = '$usenmupdrq'"));
-						$loopnr = $db->num_rows($returny);
-						$regulov++;
-					}
-					$regulov = 0;
-					};
 					// Run our update query if the array isn't empty.
                     if(!empty($update)) $db->update_query('users', $update, "loginname = '$steamid'");
 
@@ -652,29 +658,12 @@ function fix_steam_username()
 
                         // Get the details of the user from their Steam ID.
                         $user_details = $steam->get_user_info($loginname);
-
+						
+						//Run username unique function
+						$user_details['personaname'] = steam_unique_username($user_details);
+						
                         // Get the persona from the Steam service.
                         $personaname = $user_details['personaname'];
-						//Duplicate Username Edit
-						$returnids = ($db->simple_select('users', '*', "loginname='$steamid' and username='$personaname'"));
-						if($db->num_rows($returnids) == 0){
-						$returny = ($db->simple_select('users', '*', "username = '$personaname'"));
-						$loopnr = $db->num_rows($returny);
-						while($loopnr > 0){
-							$retnrch = $db->num_rows($returny); 
-							if ($regulov > 0)
-								{
-									$personaname = stristr($personaname, '(', true);
-									$personaname = $personaname.'('.($regulov+2).')';
-								} else {
-								$personaname = $personaname.' ('.($regulov+2).')';
-								};
-							$returny = ($db->simple_select('users', '*', "username = '$personaname'"));
-							$loopnr = $db->num_rows($returny);
-							$regulov++;
-						}
-						$regulov = 0;
-						};
 
                         // Create an array of data to update.
                         $update = array();
