@@ -696,7 +696,7 @@ function fix_steam_username()
 
                         // Create an array of data to update.
                         $update = array();
-                        $update['loginname'] = $personaname;
+                        $update['username'] = $personaname;
 
                         // Run the update query.
                         $db->update_query('users', $update, "uid = '$uid'");
