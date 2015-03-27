@@ -528,8 +528,8 @@ function steam_output_to_misc() {
 			    $user = $db->fetch_array($db->simple_select("users", "*", "loginname = '$steamid'"));
 
 			    // Login the user.
-				my_setcookie("mybbuser", $user['uid']."_".$user['loginkey'], (60*60*24*90), true);
-				my_setcookie("sid", $session->sid, (60*60*24*90), true);
+				my_setcookie("mybbuser", $user['uid']."_".$user['loginkey'], (60*60*24*30), true);
+				my_setcookie("sid", $session->sid, (60*60*24*30), true);
 
 				redirect("index.php", 'Your account has been authenticated and you have been logged in.<br/> Powered By <a href="http://www.steampowered.com" target="_blank">Steam</a>', 'Login via Steam');
 
