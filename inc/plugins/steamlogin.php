@@ -173,21 +173,9 @@ function steamlogin_activate()
 			</tr>
 			<tr>
 				<td class="trow1" width="40%">
-					<strong>Steam Verified</strong>
-				</td>
-				<td class="trow1">{$steam_verified}</td>
-			</tr>
-			<tr>
-				<td class="trow1" width="40%">
 					<strong>Steam Status</strong>
 				</td>
 				<td class="trow1">{$steam_status}</td>
-			</tr>
-			<tr>
-				<td class="trow1" width="40%">
-					<strong>Level</strong>
-				</td>
-				<td class="trow1">{$steam_level}</td>
 			</tr>
 			<tr>
 				<td class="trow1" width="40%">
