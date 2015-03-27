@@ -505,14 +505,24 @@ function steam_output_to_misc() {
 
                     }
 
+					//Hacking username validation for the greater good.
+					$backupusername = $new_user_data['username'];
+					//This is the only name you cant ever have in steam. Plus random to ensure that multiple people registing right now wont conflict.
+					$new_user_data['username'] = 'steam'.random_str(7);
+					
 					$userhandler->set_data($new_user_data);
-
 					if ($userhandler->validate_user()) {
 
 						$user_info = $userhandler->insert_user();
+						
+						//Updating Username since we passed the check
+                        $update = array();
+                        $update['username'] = $backupusername;
+
+                        // Run the update query.
+                        $db->update_query('users', $update, "loginname = '$steamid'");
 
 					} // close if ($userhandler->validate_user())
-
 
 			    } else { // close if($user_check == 0)
 
