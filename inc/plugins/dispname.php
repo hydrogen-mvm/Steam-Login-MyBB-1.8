@@ -48,8 +48,12 @@ $plugins->add_hook('member_do_lostpw_start', 'dispname_member_lostpw');
 
 $plugins->add_hook('portal_do_login_start', 'dispname_member_login');
 $plugins->add_hook('member_do_login_start', 'dispname_member_login');
+$plugins->add_hook('datahandler_login_validate_start', 'dispname_member_login'); // 1.8 only
 $plugins->add_hook('member_register_end', 'dispname_register_langs');
-$plugins->add_hook('xmlhttp', 'dispname_register_checkloginname');
+if($GLOBALS['mybb']->version_code >= 1700)
+	$plugins->add_hook('xmlhttp', 'dispname_register_checkloginname18');
+else
+	$plugins->add_hook('xmlhttp', 'dispname_register_checkloginname');
 
 if(defined('IN_ADMINCP')) {
 	$action =& $GLOBALS['mybb']->input['do'];
@@ -71,8 +75,8 @@ function dispname_info()
 		'website'		=> 'http://mybbhacks.zingaburga.com/',
 		'author'		=> 'ZiNgA BuRgA',
 		'authorsite'	=> 'http://zingaburga.com/',
-		'version'		=> '1.05',
-		'compatibility'	=> '14*,15*,16*,18*',
+		'version'		=> '1.10',
+		'compatibility'	=> '14*,15*,16*,17*,18*',
 		'guid'			=> ''
 	);
 }
@@ -84,12 +88,22 @@ function dispname_close_board($e) {
 function dispname_template_mods() {
 	return array(
 		'<td colspan="2"><span class="smalltext"><label for="username">{$lang->username}</label></span></td>' => '<td><span class="smalltext"><label for="loginname">{$lang->loginname}</label></span></td><td><span class="smalltext"><label for="username">{$lang->username}</label></span></td>',
-		'<td colspan="2"><input type="text" class="textbox" name="username" id="username" style="width: 100%" value="{$username}" /></td>' => '<td><input type="text" class="textbox" name="loginname" id="loginname" style="width: 100%" value="{$loginname}" /></td><td><input type="text" class="textbox" name="username" id="username" style="width: 100%" value="{$username}" /></td>',
+		'<td colspan="2"><input type="text" class="textbox" name="username" id="username" style="width: 100%" value="{$username}" /></td>' => '<td width="50%" valign="top"><input type="text" class="textbox" name="loginname" id="loginname" style="width: 100%" value="{$loginname}" /></td><td width="50%" valign="top"><input type="text" class="textbox" name="username" id="username" style="width: 100%" value="{$username}" /></td>',
 		'regValidator.register(\'username\', \'ajax\', {url:\'xmlhttp.php?action=username_availability\', loading_message:\'{$lang->js_validator_checking_username}\'});' => 'regValidator.register(\'loginname\', \'ajax\', {url:\'xmlhttp.php?action=loginname_availability\', loading_message:\'{$lang->js_validator_checking_loginname}\'});
-	regValidator.register(\'username\', \'ajax\', {url:\'xmlhttp.php?action=username_availability\', loading_message:\'{$lang->js_validator_checking_username}\'});'
+	regValidator.register(\'username\', \'ajax\', {url:\'xmlhttp.php?action=username_availability\', loading_message:\'{$lang->js_validator_checking_username}\'});',
+		'email: {' => 'loginname: {
+			required: true,
+			remote:{
+				url: "xmlhttp.php?action=loginname_availability",
+				type: "post",
+				dataType: "json",
+				data: { my_post_key: my_post_key }
+			}
+          },
+          email: {'
 	);
 }
-function dispname_activate() {
+function dispname_install() {
 	global $db, $mybb;
 	
 	// close the board for a sec
@@ -103,16 +117,22 @@ function dispname_activate() {
 	$db->write_query('ALTER TABLE `'.$db->table_prefix.'users` ADD UNIQUE KEY `loginname` (`loginname`)');
 	
 	
+	if($unclose_board) dispname_close_board(0);
+}
+function dispname_activate() {
 	require MYBB_ROOT.'inc/adminfunctions_templates.php';
 	foreach(dispname_template_mods() as $src => $dest)
 		find_replace_templatesets('member_register', '~'.preg_quote($src).'~', $dest);
-	
-	
-	
-	
-	if($unclose_board) dispname_close_board(0);
+}
+function dispname_is_installed() {
+	return $GLOBALS['db']->field_exists('loginname', 'users');
 }
 function dispname_deactivate() {
+	require MYBB_ROOT.'inc/adminfunctions_templates.php';
+	foreach(dispname_template_mods() as $src => $dest)
+		find_replace_templatesets('member_register', '~'.preg_quote($dest, '~').'~', $src, 0);
+}
+function dispname_uninstall() {
 	global $db, $cache;
 	
 	// close the board for a sec
@@ -147,12 +167,6 @@ function dispname_deactivate() {
 	}
 	$db->write_query('UPDATE `'.$db->table_prefix.'users` SET username=loginname');
 	$db->write_query('ALTER TABLE `'.$db->table_prefix.'users` DROP COLUMN `loginname`, DROP KEY `loginname`, ADD UNIQUE KEY `username` (`username`)');
-	
-	
-	
-	require MYBB_ROOT.'inc/adminfunctions_templates.php';
-	foreach(dispname_template_mods() as $src => $dest)
-		find_replace_templatesets('member_register', '~'.preg_quote($dest).'~', $src, 0);
 	
 	
 	if($unclose_board) dispname_close_board(0);
@@ -243,11 +257,12 @@ function dispname_member_reactivate() {
 	');
 	control_object($GLOBALS['lang'], '
 		function sprintf($string) {
+			$args = func_get_args();
 			if($string == $this->email_activateaccount) {
 				// !!! relies on language string !!!
 				$string = str_replace("Username: {1}", "Username: ".$GLOBALS[\'user\'][\'loginname\'], $string);
+				$args[0] = $string;
 			}
-			$args = func_get_args();
 			return call_user_func_array(array(parent, \'sprintf\'), $args);
 		}
 	');
@@ -255,23 +270,28 @@ function dispname_member_reactivate() {
 function dispname_member_lostpw() {
 	control_object($GLOBALS['lang'], '
 		function sprintf($string) {
-			if($string == $this->email_lostpw) {
+			$args = func_get_args();
+			if($string == $this->email_lostpw || $string == $this->email_lostpw2) {
 				// !!! relies on language string !!!
 				$string = str_replace("Username: {1}", "Username: ".$GLOBALS[\'user\'][\'loginname\'], $string);
+				$args[0] = $string;
 			}
-			$args = func_get_args();
 			return call_user_func_array(array(parent, \'sprintf\'), $args);
 		}
 	');
 }
 
 function dispname_member_login() {
+	static $hooked = false;
+	if($hooked) return;
+	$hooked = true;
 	control_object($GLOBALS['db'], '
 		function simple_select($table, $fields="*", $conditions="", $options=array()) {
 			if($table == "users" && $options[\'limit\'] == 1) {
 				if(substr($conditions, 0, 10) == "username=\'")
 					$conditions = "loginname".substr($conditions, 8);
-				elseif(substr($conditions, 0, 17) == "LOWER(username)=\'")
+				elseif(substr($conditions, 0, 17) == "LOWER(username)=\'"
+				|| substr($conditions, 0, 19) == "LOWER(username) = \'")
 					$conditions = "LOWER(loginname)".substr($conditions, 15);
 			}
 			return parent::simple_select($table, $fields, $conditions, $options);
@@ -289,16 +309,17 @@ function dispname_member_login() {
 function dispname_admin_login() {
 	control_object($GLOBALS['db'], '
 		function simple_select($table, $fields="*", $conditions="", $options=array()) {
-			static $done = false;
+			static $done = 0;
 			static $done2 = false;
-			if(!$done && $table == "users" && $options[\'limit\'] == 1) {
+			if($done <'.($GLOBALS['mybb']->version_code >= 1700 ?3:1).' && $table == "users" && $options[\'limit\'] == 1) {
 				if(substr($conditions, 0, 10) == "username=\'") {
 					$conditions = "loginname".substr($conditions, 8);
-					$done = true;
+					++$done;
 				}
-				elseif(substr($conditions, 0, 17) == "LOWER(username)=\'") {
+				elseif(substr($conditions, 0, 17) == "LOWER(username)=\'"
+				|| substr($conditions, 0, 19) == "LOWER(username) = \'") {
 					$conditions = "LOWER(loginname)".substr($conditions, 15);
-					$done = true;
+					++$done;
 				}
 			}
 			elseif(!$done2 && $table == "users" && $fields == "uid,email" && substr($conditions, 0, 19) == "LOWER(username) = \'") {
@@ -351,7 +372,23 @@ function dispname_register_checkloginname() {
 	else
 		die('<success>'.$lang->sprintf($lang->username_available, $nameout).'</success>');
 }
-
+function dispname_register_checkloginname18() {
+	global $mybb;
+	if($mybb->input['action'] != 'loginname_availability') return;
+	global $lang;
+	// don't see the point in doing a post check, but meh
+	if(!verify_post_check($mybb->get_input('my_post_key'), true))
+		xmlhttp_error($lang->invalid_post_code);
+	
+	header('Content-type: application/json; charset='.$GLOBALS['charset']);
+	if(!dispname_loginname_valid($mybb->input['loginname']))
+		die(json_encode($lang->banned_characters_username));
+	$nameout = htmlspecialchars_uni($mybb->input['loginname']);
+	if(dispname_loginname_exists($mybb->input['loginname']))
+		die(json_encode($lang->sprintf($lang->username_taken, $nameout)));
+	else
+		die(json_encode('true'));
+}
 
 function dispname_admin_add_field() {
 	global $mybb, $plugins;
@@ -401,8 +438,8 @@ function dispname_loginname_exists($name, $uid=0) {
 	$uid_check = '';
 	if($uid)
 		$uid_check = ' AND uid!='.intval($uid);
-	$query = $db->simple_select('users', 'COUNT(uid) AS count', 'LOWER(loginname)="'.$db->escape_string(strtolower($name)).'"'.$uid_check);
-	return ($db->fetch_field($query, 'count') > 0);
+	$query = $db->simple_select('users', 'uid', 'LOWER(loginname)="'.$db->escape_string(strtolower($name)).'"'.$uid_check, array('limit' => 1));
+	return (bool)$db->fetch_field($query, 'uid');
 }
 
 // TODO: admin search users??
