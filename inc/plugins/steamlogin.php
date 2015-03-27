@@ -651,7 +651,7 @@ function steam_account_linked()
 
 } // close function steam_account_linked
 
-
+//Note: This takes way to long to do. Has to be handled differently  as it only causes a timeout.
 function fix_steam_username()
 {
 
