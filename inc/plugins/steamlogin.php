@@ -164,7 +164,7 @@ function steamlogin_activate()
     $plugin_templates = array(
         "tid" => NULL,
         "title" => 'steamlogin_profile_block',
-        "template" => $db->escape_string('<br />
+        "template" => $db->escape_string('
 		<table border="0" cellspacing="{$theme[\'borderwidth\']}" cellpadding="{$theme[\'tablespace\']}" class="tborder">
 			<tr>
 				<td colspan="2" class="thead">
