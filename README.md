@@ -6,7 +6,7 @@ This is mainly a collections of fixes and adjustments for the version 1.6
 
 **Please Note!** - This plugin will only work for MyBB 1.8
 
-This plugin will replace the base functionality of registering and logging in by default. The code is pretty self explanitory so you can change this to work alongside etc.
+This plugin will replace the base functionality of registering and logging in by default.
 
 To install copy all files to your server and enable both the 'Display Usernames' and 'Steam Login' plugins.
 You will need a Steam API key to use the 'Steam Login' plugin. You can configure your key in the Settings menu in administration panel.
