@@ -12,7 +12,6 @@ if(!defined("IN_MYBB")) die("Direct initialization of this file is not allowed.<
 // Add to our hooks.
 $plugins->add_hook("misc_start", "steam_output_to_misc");
 $plugins->add_hook("misc_start", "steam_linked");
-$plugins->add_hook("misc_start", "fix_steam_username");
 $plugins->add_hook("member_login", "steam_redirect");
 $plugins->add_hook("member_register_start", "steam_redirect");
 $plugins->add_hook("no_permission", "steam_redirect", "newreply.php");
@@ -642,77 +641,5 @@ function steam_account_linked()
     } // close if($mybb->user['uid'] > 0)
 
 } // close function steam_account_linked
-
-//Note: This takes way to long to do. Has to be handled differently  as it only causes a timeout.
-function fix_steam_username()
-{
-
-    global $db, $mybb;
-	
-	//if user is admin
-    if($mybb->usergroup['cancp'])
-    {
-
-        if($mybb->input['action'] == 'fix_steam_username')
-        {
-            $get_key = $db->fetch_array($db->simple_select("settings", "name, value", "name = 'steamlogin_api_key'"));
-
-            if($get_key['value'] != null)
-            {
-
-                require_once MYBB_ROOT.'inc/class_steam.php';
-
-                // Create a new instance of the Steam class.
-                $steam = new steam;
-
-                // Grab a list of all users.
-                $users_result = $db->simple_select("users", "uid, loginname", "");
-
-                while($user = $db->fetch_array($users_result))
-                {
-
-                    $uid = $user['uid'];
-                    $loginname = $user['loginname'];
-
-                    if(is_numeric($uid) && (is_numeric($loginname) && strlen($loginname) == 17))
-                    {
-
-                        // Get the details of the user from their Steam ID.
-                        $user_details = $steam->get_user_info($loginname);
-						
-						//Run username unique function
-						$user_details['personaname'] = steam_unique_username($user_details);
-						
-                        // Get the persona from the Steam service.
-                        $personaname = $user_details['personaname'];
-
-                        // Create an array of data to update.
-                        $update = array();
-                        $update['username'] = $personaname;
-
-                        // Run the update query.
-                        $db->update_query('users', $update, "uid = '$uid'");
-
-                    } // close if(is_numeric($uid) && (is_numeric($loginname) && strlen($loginname) == 17))
-
-                } // close while($user = $db->fetch_array($users_result))
-
-                die("<p>Any user(s) that were missing a Steam name will have now been updated.</p>");
-
-            } else { // close if(!is_null($get_key))
-
-                die("<strong>Not Configured</strong> The Steam Login plugin hasn't been configured correctly. Please ensure an API key is set in the Configuration settings.");
-
-            } // close else
-
-        }
-
-    } else { // close if user is not admin.
-
-        die("You shouldn't be here...");
-
-    } // close else
-
-} // close function
 
 ?>
