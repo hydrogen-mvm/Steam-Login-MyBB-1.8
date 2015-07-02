@@ -40,8 +40,7 @@ function steamlogin_info()
     $curl_message = null;
     if(function_exists('curl_version')) $curl_installed = true;
 
-    $curl_message = "<br>&check; You have the required dependencies to use this plugin.<br>";
-    if(!$curl_installed) $curl_message = "<br><strong>&times; You don't have CURL installed. This plugin won't work.</strong><br>";
+    $curl_message = "<br><strong>&times; You don't have CURL installed. This plugin won't work.</strong><br>";
     if(function_exists(dispname_is_installed)) $curl_message = "<br><strong>&times; CURL PHP Extention and the 'Display Usernames / Nicks Plugin' Plugin must be installed before Steamlogin can be installed!</strong><br>";
 	return array(
 		"name"			=> "Steam Login",
