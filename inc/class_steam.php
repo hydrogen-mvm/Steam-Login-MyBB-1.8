@@ -97,8 +97,7 @@ class steam {
             {
 
                 $player_info = $info_array['response']['players'][0];
-		$personaname = json_encode($player_info["personaname"]);
-		$personaname = substr($personaname,1,-1);
+		$personaname = $player_info["personaname"];
 
 		$replacer = array(
 	        "/",
