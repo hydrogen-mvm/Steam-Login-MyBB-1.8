@@ -111,7 +111,7 @@ class steam {
 	    	);
 	
 		$personaname = str_replace($replacer, "", $personaname);
-		$personaname = htmlentities($personaname);
+		$personaname = strip_tags($personaname);
 
                 $profileurl = $player_info['profileurl'];
                 $avatar_s = $player_info['avatar'];
