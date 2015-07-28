@@ -165,19 +165,19 @@ function steamlogin_activate()
 				</td>
 			</tr>
 			<tr>
-				<td class="trow1" width="40%">
+				<td class="trow1" width="30%">
 					<strong>Steam Status</strong>
 				</td>
 				<td class="trow1">{$steam_status}</td>
 			</tr>
 			<tr>
-				<td class="trow1" width="40%">
+				<td class="trow1" width="30%">
 					<strong>SteamID 32</strong>
 				</td>
 				<td class="trow1">{$steamid_32}</td>
 			</tr>
 			<tr>
-				<td class="trow1" width="40%">
+				<td class="trow1" width="30%">
 					<strong>SteamID 64</strong>
 				</td>
 				<td class="trow1">
@@ -185,7 +185,7 @@ function steamlogin_activate()
 				</td>
 			</tr>
 			<tr>
-				<td class="trow1" width="40%">
+				<td class="trow1" width="30%">
 					<strong>SteamRep</strong>
 				</td>
 				<td class="trow1">{$steamrep_link}</td>
@@ -579,7 +579,7 @@ function steamify_user_profile()
         $steam_verified = 'Yes';
 
 		// Get our steam status
-        $steam_status = '<a href="http://www.steamcommunity.com/profiles/'.$steamid_64.'" target="_blank"><img src="http://steamsignature.com/status/english/'.$steamid_64.'.png" /></a><a href="steam://friends/add/'.$steamid_64.'"><img src="http://steamsignature.com/AddFriend.png"></a>';
+        $steam_status = '<a href="http://www.steamcommunity.com/profiles/'.$steamid_64.'" target="_blank"><img src="http://badges.steamprofile.com/profile/default/steam/'.$steamid_64.'.png" /></a><br/><center><a href="steam://friends/add/'.$steamid_64.'">Click here to add this user on Steam!</a></center>';
 		
         // Create a link for SteamRep.
         $steamrep_link = '<a href="http://www.steamrep.com/profiles/'.$steamid_64.'" target="_blank">www.steamrep.com/profiles/'.$steamid_64.'</a>';
