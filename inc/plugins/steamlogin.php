@@ -562,9 +562,8 @@ function steamify_user_profile()
     $steamid_64 = 'N/A';
     $steamid_32 = 'N/A';
     $steamrep_link = 'N/A';
-	$steam_status = 'N/A';
-    $steam_level = '?';
-
+    $steam_status = 'N/A';
+  
     // Check to see if loginname is empty, and make sure it's numeric.
     if($user_details['loginname'] != null and is_numeric($user_details['loginname']))
     {
@@ -572,9 +571,6 @@ function steamify_user_profile()
         // Get our ID variables.
         $steamid_64 = $user_details['loginname'];
         $steamid_32 = $steam->convert64to32($steamid_64);
-
-        // Get the level on the Steam profile.
-        $steam_level = $steam->get_steam_level($steamid_64);
 
         $steam_verified = 'Yes';
 
