@@ -425,112 +425,111 @@ function steam_output_to_misc() {
 
 	    	$steam = new steam;
 	     
-	     	$steam_open_id = new LightOpenID();   
-	        $steam_open_id->validate();
+	     	$steam_open_id = new LightOpenID(); 
+	     	if($steam_open_id->validate()){
 
-	        $return_explode = explode('/', $steam_open_id->identity);
-	        $steamid = end($return_explode);
-
-	        $steam_info = $steam->get_user_info($steamid);
-			
-			//Run username unique function
-			$steam_info['personaname'] = steam_unique_username($steam_info);
-
-	        // Check the status.
-	        if($steam_info['status'] == 'success')
-	        {
-
-	        	$steamid = $steam_info['steamid'];
-	        	$personaname = $steam_info['personaname'];
-	        	$profileurl = $steam_info['profileurl'];
-                $avatar = $steam_info['avatars']['medium'];
-
-                // Check the avatar size set in the database.
-                if($check_avatar_size['value'] == '0') $avatar = $steam_info['avatars']['small'];
-                if($check_avatar_size['value'] == '2') $avatar = $steam_info['avatars']['large'];
-			
-		        // Perform a check to see if the user already exists in the database.
-		        $user_check = $db->num_rows($db->simple_select("users", "*", "loginname = '$steamid'"));
-
-		        if($user_check == 0) 
-		        {
-
-		        	$password = random_str(8);
-		        	$email = $steamid.'@steamcommunity.com';
-		        	$default_usergroup = 2; // On a standard MyBB installation this is the group: Registered
-
-					require_once MYBB_ROOT . "inc/datahandlers/user.php";
-					$userhandler = new UserDataHandler("insert");
-					
-					$new_user_data = array(
-						"username" => $personaname,
-						"password" => $password,
-						"password2" => $password,
-						"email" => $email,
-						"email2" => $email,
-						"avatar" => $avatar,
-						"usergroup" => $default_usergroup,
-						"displaygroup" => $default_usergroup,
-						"website" => $profileurl,
-						"regip" => $session->ipaddress,
-						"longregip" => my_ip2long($session->ipaddress),
-						"loginname" => $steamid
-					);
-
-                    if($check_required_field['value'] != "" and is_numeric($check_required_field['value']))
-                    {
-
-                        // Check the field exists.
-                        $field_exists = $db->num_rows($db->simple_select("profilefields", "*", "fid = '".$check_required_field['value']."'"));
-                        if($field_exists > 0) $new_user_data['profile_fields']['fid'.$check_required_field['value']] = $steamid;
-
-                    }
-
-					//Hacking username validation for the greater good.
-					$backupusername = $new_user_data['username'];
-					//This is the only name you cant ever have in steam. Plus random to ensure that multiple people registing right now wont conflict.
-					$new_user_data['username'] = 'steam'.random_str(7);
-					
-					$userhandler->set_data($new_user_data);
-					if ($userhandler->validate_user()) {
-
-						$user_info = $userhandler->insert_user();
+		        $return_explode = explode('/', $steam_open_id->identity);
+		        $steamid = end($return_explode);
+	
+		        $steam_info = $steam->get_user_info($steamid);
+				
+				//Run username unique function
+				$steam_info['personaname'] = steam_unique_username($steam_info);
+	
+		        // Check the status.
+		       if($steam_info['status'] == 'success')
+		       {
+	
+		        	$steamid = $steam_info['steamid'];
+		        	$personaname = $steam_info['personaname'];
+		        	$profileurl = $steam_info['profileurl'];
+	                $avatar = $steam_info['avatars']['medium'];
+	
+	                // Check the avatar size set in the database.
+	                if($check_avatar_size['value'] == '0') $avatar = $steam_info['avatars']['small'];
+	                if($check_avatar_size['value'] == '2') $avatar = $steam_info['avatars']['large'];
+				
+			        // Perform a check to see if the user already exists in the database.
+			        $user_check = $db->num_rows($db->simple_select("users", "*", "loginname = '$steamid'"));
+	
+			        if($user_check == 0) 
+			        {
+	
+			        	$password = random_str(8);
+			        	$email = $steamid.'@steamcommunity.com';
+			        	$default_usergroup = 2; // On a standard MyBB installation this is the group: Registered
+	
+						require_once MYBB_ROOT . "inc/datahandlers/user.php";
+						$userhandler = new UserDataHandler("insert");
 						
-						//Updating Username since we passed the check
-                        $update = array();
-                        $update['username'] = $backupusername;
-
-                        // Run the update query.
-                        $db->update_query('users', $update, "loginname = '$steamid'");
-
-					} // close if ($userhandler->validate_user())
-
-			    } else { // close if($user_check == 0)
-
-                    $update = array(); // Init our update array.
-
-                    // Do our checks for both username and avatar.
-                    if($check_update_username['value'] == 1) $update['username'] = $personaname;
-                    if($check_update_avatar['value'] == 1) $update['avatar'] = $avatar;
-                    
-					// Run our update query if the array isn't empty.
-                    if(!empty($update)) $db->update_query('users', $update, "loginname = '$steamid'");
-
-			    } // close else
-
-			    $user = $db->fetch_array($db->simple_select("users", "*", "loginname = '$steamid'"));
-
-			    // Login the user.
-				my_setcookie("mybbuser", $user['uid']."_".$user['loginkey'], (60*60*24*30), true);
-				my_setcookie("sid", $session->sid, (60*60*24*30), true);
-
-				redirect("index.php", 'Your account has been authenticated and you have been logged in.<br/> Powered By <a href="http://www.steampowered.com" target="_blank">Steam</a>', 'Login via Steam');
-
-			} // close if($steam_info['status'] == 'success')
-
-		} // close else
-
-	} // close if($mybb->input['action'] == 'steam_login')
+						$new_user_data = array(
+							"username" => $personaname,
+							"password" => $password,
+							"password2" => $password,
+							"email" => $email,
+							"email2" => $email,
+							"avatar" => $avatar,
+							"usergroup" => $default_usergroup,
+							"displaygroup" => $default_usergroup,
+							"website" => $profileurl,
+							"regip" => $session->ipaddress,
+							"longregip" => my_ip2long($session->ipaddress),
+							"loginname" => $steamid
+						);
+	
+	                    if($check_required_field['value'] != "" and is_numeric($check_required_field['value']))
+	                    {
+	
+	                        // Check the field exists.
+	                        $field_exists = $db->num_rows($db->simple_select("profilefields", "*", "fid = '".$check_required_field['value']."'"));
+	                        if($field_exists > 0) $new_user_data['profile_fields']['fid'.$check_required_field['value']] = $steamid;
+	
+	                    }
+	
+						//Hacking username validation for the greater good.
+						$backupusername = $new_user_data['username'];
+						//This is the only name you cant ever have in steam. Plus random to ensure that multiple people registing right now wont conflict.
+						$new_user_data['username'] = 'steam'.random_str(7);
+						
+						$userhandler->set_data($new_user_data);
+						if ($userhandler->validate_user()) {
+	
+							$user_info = $userhandler->insert_user();
+							
+							//Updating Username since we passed the check
+	                        $update = array();
+	                        $update['username'] = $backupusername;
+	
+	                        // Run the update query.
+	                        $db->update_query('users', $update, "loginname = '$steamid'");
+	
+						} // close if ($userhandler->validate_user())
+	
+				    } else { // close if($user_check == 0)
+	
+	                    $update = array(); // Init our update array.
+	
+	                    // Do our checks for both username and avatar.
+	                    if($check_update_username['value'] == 1) $update['username'] = $personaname;
+	                    if($check_update_avatar['value'] == 1) $update['avatar'] = $avatar;
+	                    
+						// Run our update query if the array isn't empty.
+	                    if(!empty($update)) $db->update_query('users', $update, "loginname = '$steamid'");
+	
+				    } // close else
+	
+				    $user = $db->fetch_array($db->simple_select("users", "*", "loginname = '$steamid'"));
+	
+				    // Login the user.
+					my_setcookie("mybbuser", $user['uid']."_".$user['loginkey'], (60*60*24*30), true);
+					my_setcookie("sid", $session->sid, (60*60*24*30), true);
+	
+					redirect("index.php", 'Your account has been authenticated and you have been logged in.<br/> Powered By <a href="http://www.steampowered.com" target="_blank">Steam</a>', 'Login via Steam');
+	
+				} // close if($steam_info['status'] == 'success')
+	     	}
+	} // close else
+    } // close if($mybb->input['action'] == 'steam_login')
 
 } // close function steam_return
 
