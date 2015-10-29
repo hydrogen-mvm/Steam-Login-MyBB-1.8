@@ -67,7 +67,7 @@ function steamlogin_activate()
         "title" => "Steam Login - Settings",
         "description" => "Modify the settings of the Steam Login plugin.",
         "disporder" => "0",
-        "isdefault" => "no",
+        "isdefault" => 0
     );
     
     // Create our Setting group in the database.
