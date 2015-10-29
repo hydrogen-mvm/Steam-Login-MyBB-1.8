@@ -155,7 +155,6 @@ function steamlogin_activate()
 	find_replace_templatesets('header_welcomeblock_guest', '#' . preg_quote('{$lang->welcome_register}</a>') . '#i', '{$lang->welcome_register}</a> &mdash; <a href="{$mybb->settings[\'bburl\']}/misc.php?action=steam_login"><img border="0" src="inc/plugins/steamlogin/steam_login_btn.png" alt="Login through Steam" style="vertical-align:middle"></a>');
 
     $plugin_templates = array(
-        "tid" => NULL,
         "title" => 'steamlogin_profile_block',
         "template" => $db->escape_string('
 		<table border="0" cellspacing="{$theme[\'borderwidth\']}" cellpadding="{$theme[\'tablespace\']}" class="tborder">
@@ -199,7 +198,6 @@ function steamlogin_activate()
     $db->insert_query("templates", $plugin_templates);
 
     $plugin_templates = array(
-        "tid" => NULL,
         "title" => 'steamlogin_feature_disabled',
         "template" => $db->escape_string('<html>
 		<head>
