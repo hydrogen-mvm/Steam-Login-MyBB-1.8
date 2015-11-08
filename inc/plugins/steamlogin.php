@@ -257,7 +257,7 @@ function steamlogin_deactivate()
      * Revert username length change.
      */
     $update_username_length = $db->update_query("settings",array('value' => '15'),"name = 'maxnamelength'");
-	$update_username_min = $db->update_query("settings",array('value' => '6'),"name = 'minnamelength'");
+    $update_username_min = $db->update_query("settings",array('value' => '6'),"name = 'minnamelength'");
 
     /**
      * Template Edits
