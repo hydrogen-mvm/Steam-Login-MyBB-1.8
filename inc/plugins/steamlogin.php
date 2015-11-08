@@ -143,7 +143,7 @@ function steamlogin_activate()
      * Perform an update to the username length and min.
      */
     $update_username_length = $db->update_query("settings",array('value' => '70'),"name = 'maxnamelength'");
-	$update_username_min = $db->update_query("settings",array('value' => '2'),"name = 'minnamelength'");
+    $update_username_min = $db->update_query("settings",array('value' => '2'),"name = 'minnamelength'");
 
     /**
      * Template Edits
