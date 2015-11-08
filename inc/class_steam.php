@@ -112,6 +112,12 @@ class steam {
 	
 		$personaname = str_replace($replacer, "", $personaname);
 		$personaname = strip_tags($personaname);
+		
+		//Namelenght of 1 is minimum, enforcing
+		while (strlen($personaname) <= 1)
+		{
+			$personaname = $personaname.'-';
+		}
 
                 $profileurl = $player_info['profileurl'];
                 $avatar_s = $player_info['avatar'];

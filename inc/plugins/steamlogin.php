@@ -140,9 +140,10 @@ function steamlogin_activate()
     rebuild_settings();
 
     /**
-     * Perform an update to the username length.
+     * Perform an update to the username length and min.
      */
     $update_username_length = $db->update_query("settings",array('value' => '70'),"name = 'maxnamelength'");
+	$update_username_min = $db->update_query("settings",array('value' => '1'),"name = 'minnamelength'");
 
     /**
      * Template Edits
@@ -258,6 +259,7 @@ function steamlogin_deactivate()
      * Revert username length change.
      */
     $update_username_length = $db->update_query("settings",array('value' => '15'),"name = 'maxnamelength'");
+	$update_username_min = $db->update_query("settings",array('value' => '6'),"name = 'minnamelength'");
 
     /**
      * Template Edits
@@ -290,12 +292,6 @@ function steam_unique_username($steam_info)
 	
 	$personaname = $steam_info['personaname'];
 	$steamid = $steam_info['steamid'];
-	
-	//Namelenght of 5 is minimum, enforcing
-	while (strlen($personaname) <= 4)
-	{
- 		$personaname = $personaname.'-';
-	}
 
 	$i = 0;
 
