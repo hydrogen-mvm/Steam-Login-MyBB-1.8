@@ -114,7 +114,7 @@ class steam {
 		$personaname = strip_tags($personaname);
 		
 		//Namelenght of 1 is minimum, enforcing
-		while (strlen($personaname) <= 1)
+		while (strlen($personaname) <= 2)
 		{
 			$personaname = $personaname.'-';
 		}
