@@ -2,7 +2,7 @@ Steam-Login-MyBB-1.8
 ===================
 This is a fork of https://github.com/stewartiee/Steam-OpenID--MyBB-/ version 1.6
 
-This is mainly a collections of fixes and adjustments for the version 1.6
+This is mainly a collection of fixes and adjustments for the version 1.6
 
 **Please Note!** - This plugin will only work for MyBB 1.8
 
