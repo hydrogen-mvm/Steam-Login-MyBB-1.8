@@ -567,8 +567,8 @@ function steamify_user_profile()
 
         $steam_verified = 'Yes';
 
-		// Get our steam status
-        $steam_status = '<a href="http://www.steamcommunity.com/profiles/'.$steamid_64.'" target="_blank"><img src="http://badges.steamprofile.com/profile/default/steam/'.$steamid_64.'.png" /></a><br/><center><a href="steam://friends/add/'.$steamid_64.'">Click here to add this user on Steam!</a></center>';
+	// Get our steam status
+        $steam_status = '<center><a href="steam://friends/add/'.$steamid_64.'">Click here to add this user on Steam!</a></center>';
 		
         // Create a link for SteamRep.
         $steamrep_link = '<a href="http://www.steamrep.com/profiles/'.$steamid_64.'" target="_blank">www.steamrep.com/profiles/'.$steamid_64.'</a>';
