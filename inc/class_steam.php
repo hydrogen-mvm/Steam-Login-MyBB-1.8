@@ -117,20 +117,8 @@ class steam
 				
 				$player_info = $info_array['response']['players'][0];
 				$personaname = $player_info["personaname"];
-				
-				$replacer = array(
-					"/",
-					"'",
-					"\\",
-					'"',
-					",",
-					"%2F",
-					"%5C",
-					";"
-				);
-				
-				$personaname = str_replace($replacer, "", $personaname);
-				$personaname = strip_tags($personaname);
+								
+				$personaname = preg_replace("/,/", "，", $personaname);
 				$personaname = trim($personaname);
 				
 				if ($personaname == '')
