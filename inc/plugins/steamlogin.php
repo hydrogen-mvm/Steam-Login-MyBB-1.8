@@ -153,7 +153,7 @@ function steamlogin_activate()
     require_once MYBB_ROOT . 'inc/adminfunctions_templates.php';
 
     // Add a Login button to the "Welcome Block"/
-	find_replace_templatesets('header_welcomeblock_guest', '#' . preg_quote('{$lang->welcome_register}</a>') . '#i', '{$lang->welcome_register}</a> &mdash; <a href="{$mybb->settings[\'bburl\']}/misc.php?action=steam_login"><img border="0" src="{$mybb->settings[\'bburl\']}/inc/plugins/steamlogin/steam_login_btn.png" alt="Login through Steam" style="vertical-align:middle"></a>');
+	find_replace_templatesets('header_welcomeblock_guest', '#' . preg_quote('{$lang->welcome_register}</a>') . '#i', '{$lang->welcome_register}</a> &mdash; <a href="{$mybb->settings[\'bburl\']}/misc.php?action=steam_login"><img border="0" src="inc/plugins/steamlogin/steam_login_btn.png" alt="Login through Steam" style="vertical-align:middle"></a>');
 
     $plugin_templates = array(
         "title" => 'steamlogin_profile_block',
@@ -266,13 +266,73 @@ function steamlogin_deactivate()
      */
     require_once MYBB_ROOT . 'inc/adminfunctions_templates.php';
 
-    find_replace_templatesets('header_welcomeblock_guest', '#' . preg_quote('&mdash; <a href="{$mybb->settings[\'bburl\']}/misc.php?action=steam_login"><img border="0" src="{$mybb->settings[\'bburl\']}inc/plugins/steamlogin/steam_login_btn.png" alt="Login through Steam" style="vertical-align:middle"></a>') . '#i', '');
+    find_replace_templatesets('header_welcomeblock_guest', '#' . preg_quote('&mdash; <a href="{$mybb->settings[\'bburl\']}/misc.php?action=steam_login"><img border="0" src="inc/plugins/steamlogin/steam_login_btn.png" alt="Login through Steam" style="vertical-align:middle"></a>') . '#i', '');
     find_replace_templatesets('member_profile', '#' . preg_quote('{$steamlogin_profile_block}{$signature}') . '#i', '{$signature}');
     find_replace_templatesets('footer', '#' . preg_quote('Steam Login provided by <a href="http://www.calculator.tf">www.calculator.tf</a><br>Powered by <a href="http://www.steampowered.com">Steam</a>.') . '#i', '');
 
     $db->delete_query("templates", "title LIKE 'steamlogin_%' AND sid='-1'");
 
 } // close function steamlogin_deactivate
+
+
+/**
+ *
+ * Steam Emoji Username - steam_emoji_username
+ * - - - - - - - - - - - - - - -
+ * @desc Ensures emoji chars are converted to html code.
+ * @since 1.8
+ * @version 1.8
+ *
+ */
+function steam_emoji_username( $string ) {
+    $stringBuilder = "";
+    $offset = 0;
+
+    if ( empty( $string ) ) {
+        return "";
+    }
+
+    while ( $offset >= 0 ) {
+        $decValue = ordutf8( $string, $offset );
+        $char = unichrsteam($decValue);
+
+        $htmlEntited = htmlentities( $char );
+        if( $char != $htmlEntited ){
+            $stringBuilder .= $htmlEntited;
+        } elseif( $decValue >= 128 ){
+            $stringBuilder .= "&#" . $decValue . ";";
+        } else {
+            $stringBuilder .= $char;
+        }
+    }
+
+    return $stringBuilder;
+}
+
+// source - http://php.net/manual/en/function.ord.php#109812
+function ordutf8($string, &$offset) {
+    $code = ord(substr($string, $offset,1));
+    if ($code >= 128) {        //otherwise 0xxxxxxx
+        if ($code < 224) $bytesnumber = 2;                //110xxxxx
+        else if ($code < 240) $bytesnumber = 3;        //1110xxxx
+        else if ($code < 248) $bytesnumber = 4;    //11110xxx
+        $codetemp = $code - 192 - ($bytesnumber > 2 ? 32 : 0) - ($bytesnumber > 3 ? 16 : 0);
+        for ($i = 2; $i <= $bytesnumber; $i++) {
+            $offset ++;
+            $code2 = ord(substr($string, $offset, 1)) - 128;        //10xxxxxx
+            $codetemp = $codetemp*64 + $code2;
+        }
+        $code = $codetemp;
+    }
+    $offset += 1;
+    if ($offset >= strlen($string)) $offset = -1;
+    return $code;
+}
+
+// source - http://php.net/manual/en/function.chr.php#88611
+function unichrsteam($u) {
+    return mb_convert_encoding('&#' . intval($u) . ';', 'UTF-8', 'HTML-ENTITIES');
+}
 
 /**
  *
@@ -288,7 +348,7 @@ function steam_unique_username($steam_info)
 
 	global $db;
 	
-	$personaname = $steam_info['personaname'];
+	$personaname = $db->escape_string(steam_emoji_username($steam_info['personaname']));
 	$steamid = $steam_info['steamid'];
 
 	$i = 0;
@@ -492,7 +552,7 @@ function steam_output_to_misc() {
 							
 							//Updating Username since we passed the check
 	                        $update = array();
-	                        $update['username'] = $backupusername;
+	                        $update['username'] = $db->escape_string(steam_emoji_username($backupusername));
 	
 	                        // Run the update query.
 	                        $db->update_query('users', $update, "loginname = '$steamid'");
@@ -567,7 +627,7 @@ function steamify_user_profile()
 
         $steam_verified = 'Yes';
 
-	// Get our steam status
+		// Get our steam status
         $steam_status = '<a href="steam://friends/add/'.$steamid_64.'">Click here to add this user on Steam!</a>';
 		
         // Create a link for SteamRep.
