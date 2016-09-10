@@ -123,7 +123,7 @@ class steam
 				
 				if ($personaname == '')
 				{
-					$personaname = 'Kuuhaku';
+					$personaname = 'Temporary Username';
 				}
 				
 				//Namelenght of 1 is minimum, enforcing
