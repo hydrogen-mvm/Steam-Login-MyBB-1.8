@@ -93,6 +93,118 @@ class steam
 		return implode(':', $id);
 	} // close function convert64to32
 	
+	/**
+	 *
+	 * Steam Unique Username - steam_unique_username
+	 * - - - - - - - - - - - - - - -
+	 * @desc Ensures that Usernames are unique otherwise the db will not accept them
+	 * @since 1.8
+	 * @version 1.8
+	 *
+	 */
+	function steam_unique_username($personaname)
+	{
+
+		global $db;
+				
+		//Encoding unicode and making sql save.
+		$personaname = $this->steam_unicode_username($personaname);
+		$personaname = $db->escape_string($personaname);
+		$steamid = $steam_info['steamid'];
+
+		//Init some vars
+		$i = 0;
+		$unr = '';
+		
+		//Check for users with my steam name
+		$returnrows = ($db->simple_select('users', '*', "username = '$personaname'"));
+		$f = $db->num_rows($returnrows);
+		
+		//Before we start the look lets see if the result is us
+		$itisus = $db->simple_select('users', '*', "loginname='$steamid' and username='$personaname'");
+		$isit = $db->num_rows($returnrows);
+		
+		//It isnt us and there is users with that name already
+		if($isit == 0 && $f > 0)
+		{
+			//Seems it isnt us so
+			$i = 0;
+			
+			//If it is bigger than 0 there is more than 0 of me
+			while($f > 0)
+			{
+				//Code for name numbering Alt, Alt (2), Alt(3), etc.		
+				$tempersona = $personaname.' ('.($i+2).')';
+				
+				//Check so the loop keeps going if needed to
+				$returnrows = ($db->simple_select('users', '*', "username = '$tempersona'"));
+				$f = $db->num_rows($returnrows);
+				$i++;
+			}	
+		};
+		//Result will always be Unicode and Escaped
+		return $personaname.''.$unr;
+	}
+	
+	/**
+	 *
+	 * Steam Unicode Username - steam_unicode_username
+	 * - - - - - - - - - - - - - - -
+	 * @desc Ensures unicode chars are converted to html code.
+	 * @since 1.8
+	 * @version 1.8
+	 *
+	 */
+	 
+	// source - http://php.net/manual/en/function.ord.php#109812
+	function ordutf8($string, &$offset) {
+		$code = ord(substr($string, $offset,1));
+		if ($code >= 128) {        //otherwise 0xxxxxxx
+			if ($code < 224) $bytesnumber = 2;                //110xxxxx
+			else if ($code < 240) $bytesnumber = 3;        //1110xxxx
+			else if ($code < 248) $bytesnumber = 4;    //11110xxx
+			$codetemp = $code - 192 - ($bytesnumber > 2 ? 32 : 0) - ($bytesnumber > 3 ? 16 : 0);
+			for ($i = 2; $i <= $bytesnumber; $i++) {
+				$offset ++;
+				$code2 = ord(substr($string, $offset, 1)) - 128;        //10xxxxxx
+				$codetemp = $codetemp*64 + $code2;
+			}
+			$code = $codetemp;
+		}
+		$offset += 1;
+		if ($offset >= strlen($string)) $offset = -1;
+		return $code;
+	}
+	
+	// source - http://php.net/manual/en/function.chr.php#88611
+	function unichrsteam($u) {
+		return mb_convert_encoding('&#' . intval($u) . ';', 'UTF-8', 'HTML-ENTITIES');
+	}
+	
+	function steam_unicode_username( $string ) {
+		$stringBuilder = "";
+		$offset = 0;
+
+		if ( empty( $string ) ) {
+			return "";
+		}
+
+		while ( $offset >= 0 ) {
+			$decValue = $this->ordutf8( $string, $offset );
+			$char = $this->unichrsteam($decValue);
+
+			$htmlEntited = $char;
+			if( $char != $htmlEntited ){
+				$stringBuilder .= $htmlEntited;
+			} elseif( $decValue >= 128 ){
+				$stringBuilder .= "&#" . $decValue . ";";
+			} else {
+				$stringBuilder .= $char;
+			}
+		}
+
+		return $stringBuilder;
+	}
 	
 	/**
 	 * get_user_info
@@ -116,11 +228,17 @@ class steam
 			{
 				
 				$player_info = $info_array['response']['players'][0];
-				$personaname = $player_info["personaname"];
+				
+				//Encoding the username from unicode and escaping it
+				$personaname = $this->steam_unicode_username($player_info["personaname"]);
 								
+				//Hack to prevent commas from breaking pm system
 				$personaname = preg_replace("/,/", "，", $personaname);
+				
+				//Make sure the is no quitespace
 				$personaname = trim($personaname);
 				
+				//Deal with empty usernames
 				if ($personaname == '')
 				{
 					$personaname = 'Temporary Username';
@@ -131,6 +249,9 @@ class steam
 				{
 					$personaname = $personaname . '-';
 				}
+				
+				//Run function to ensure username is unique in our database.
+				$personaname = $this->steam_unique_username($personaname);
 				
 				$profileurl   = $player_info['profileurl'];
 				$avatar_s     = $player_info['avatar'];
