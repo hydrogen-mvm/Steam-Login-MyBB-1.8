@@ -1,4 +1,20 @@
 <?php
+
+/**
+ * Send to Console - Debug Function
+ * ----------------------------------
+ */
+
+function debug_to_console( $data ) {
+
+    if ( is_array( $data ) )
+        $output = "<script>console.log( 'Debug Objects: " . implode( ',', $data) . "' );</script>";
+    else
+        $output = "<script>console.log( 'Debug Objects: " . $data . "' );</script>";
+
+    echo $output;
+}
+
 /**
  * Steam Login
  * ----------------------------------
@@ -102,7 +118,7 @@ class steam
 	 * @version 1.8
 	 *
 	 */
-	function steam_unique_username($personaname)
+	function steam_unique_username($personaname, $steamid)
 	{
 
 		global $db;
@@ -110,23 +126,26 @@ class steam
 		//Encoding unicode and making sql save.
 		$personaname = $this->steam_unicode_username($personaname);
 		$personaname = $db->escape_string($personaname);
-		$steamid = $steam_info['steamid'];
 
 		//Init some vars
 		$i = 0;
-		$unr = '';
 		
 		//Check for users with my steam name
+		//debug_to_console('Sending Username "'.$personaname.'"');
 		$returnrows = ($db->simple_select('users', '*', "username = '$personaname'"));
 		$f = $db->num_rows($returnrows);
+		//debug_to_console($f.' User(s) with this Name.');
 		
 		//Before we start the look lets see if the result is us
+		//debug_to_console('Checking for SteamID "'.$steamid.'"');
 		$itisus = $db->simple_select('users', '*', "loginname='$steamid' and username='$personaname'");
-		$isit = $db->num_rows($returnrows);
-		
+		$isit = $db->num_rows($itisus);
+		//if($isit != 1){debug_to_console('The user that was found is not this user.');}
+
 		//It isnt us and there is users with that name already
 		if($isit == 0 && $f > 0)
 		{
+			
 			//Seems it isnt us so
 			$i = 0;
 			
@@ -139,11 +158,24 @@ class steam
 				//Check so the loop keeps going if needed to
 				$returnrows = ($db->simple_select('users', '*', "username = '$tempersona'"));
 				$f = $db->num_rows($returnrows);
+				
+				//Check if user is me
+				$itisus = $db->simple_select('users', '*', "loginname='$steamid' and username='$tempersona'");
+				$isit = $db->num_rows($itisus);
+				
+				//If user is me escape the loop
+				if($isit == 1)
+				{
+					$f = 0;
+					//if($isit != 1){debug_to_console('The user that was found is this user.');}
+				};
+				
 				$i++;
-			}	
+			}
+			if($f == 0){$personaname = $personaname.' ('.($i+1).')';};
 		};
 		//Result will always be Unicode and Escaped
-		return $personaname.''.$unr;
+		return $personaname;
 	}
 	
 	/**
@@ -251,7 +283,7 @@ class steam
 				}
 				
 				//Run function to ensure username is unique in our database.
-				$personaname = $this->steam_unique_username($personaname);
+				$personaname = $this->steam_unique_username($personaname, $id['steamid']);
 				
 				$profileurl   = $player_info['profileurl'];
 				$avatar_s     = $player_info['avatar'];
@@ -389,3 +421,4 @@ class steam
 	} // close function _resolve_vanity
 	
 } // close class steam
+?>
