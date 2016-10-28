@@ -391,7 +391,19 @@ function steam_output_to_misc() {
 				
 			        // Perform a check to see if the user already exists in the database.
 			        $user_check = $db->num_rows($db->simple_select("users", "*", "loginname = '$steamid'"));
-	
+					
+					
+					// Fetch banned groups
+					$query = $db->simple_select("usergroups", "gid", "isbannedgroup = '1'");
+					//Check if maingroup is a banned group
+					$usersgroup = $db->fetch_array($db->simple_select("users", "usergroup", "loginname = '$steamid'"));
+					
+					
+					while($result = $db->fetch_array($query))
+					{
+						if ($result['gid'] == $usersgroup['usergroup']) $banneduser = 1;
+					}
+					
 			        if($user_check == 0) 
 			        {
 	
@@ -443,7 +455,7 @@ function steam_output_to_misc() {
 	
 						} // close if ($userhandler->validate_user())
 	
-				    } else { // close if($user_check == 0)
+				    } else if ($banneduser == 0){ // close if($user_check == 0)
 	
 	                    $update = array(); // Init our update array.
 	
