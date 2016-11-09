@@ -153,7 +153,7 @@ function steamlogin_activate()
     require_once MYBB_ROOT . 'inc/adminfunctions_templates.php';
 
     // Add a Login button to the "Welcome Block"/
-	find_replace_templatesets('header_welcomeblock_guest', '#' . preg_quote('{$lang->welcome_register}</a>') . '#i', '<a href="{$mybb->settings[\'bburl\']}/misc.php?action=steam_login"><img border="0" src="{$mybb->settings[\'bburl\']}/inc/plugins/steamlogin/steam_login_btn.png" alt="Login through Steam" style="style="padding: 3px;height: 27px""></a>');
+	find_replace_templatesets('header_welcomeblock_guest', '#' . preg_quote('{$lang->welcome_register}</a>') . '#i', '<a href="{$mybb->settings[\'bburl\']}/misc.php?action=steam_login"><img border="0" src="{$mybb->settings[\'bburl\']}/inc/plugins/steamlogin/steam_login_btn.png" alt="Login through Steam" style="padding: 3px;height: 27px"></a>');
 
     $plugin_templates = array(
         "title" => 'steamlogin_profile_block',
