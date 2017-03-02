@@ -425,7 +425,7 @@ function steam_output_to_misc() {
 							"email2" => $email,
 							"avatar" => $avatar,
 							"usergroup" => $default_usergroup,
-							"displaygroup" => $default_usergroup,
+							"displaygroup" => 0,
 							"website" => $profileurl,
 							"regip" => $session->ipaddress,
 							"longregip" => my_ip2long($session->ipaddress),
