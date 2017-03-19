@@ -92,12 +92,22 @@ class steam
 		} // close else
 	} // close function curl
 	
-	// With thanks to https://gist.github.com/almirsarajcic/4664387
-    	function convert64to32($id)
-    	{
-        	$result = substr($id, 3) - 61197960265728;
-       	 	return (string) $result;
-    	}
+-	// With thanks to https://github.com/damianb/tf2stats for the convert64to32 function.
+-	function convert64to32($steam_cid)
+-	{
+-		$id    = array(
+-			'STEAM_0'
+-		);
+-		$id[1] = substr($steam_cid, -1, 1) % 2 == 0 ? 0 : 1;
+-		$id[2] = bcsub($steam_cid, '76561197960265728');
+-		if (bccomp($id[2], '0') != 1)
+-		{
+-			return false;
+-		}
+-		$id[2] = bcsub($id[2], $id[1]);
+-		list($id[2], ) = explode('.', bcdiv($id[2], 2), 2);
+-		return implode(':', $id);
+-	} // close function convert64to32
 	
 	/**
 	 *
