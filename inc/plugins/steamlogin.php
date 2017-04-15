@@ -152,9 +152,25 @@ function steamlogin_activate()
      */
     require_once MYBB_ROOT . 'inc/adminfunctions_templates.php';
 
-    // Add a Login button to the "Welcome Block"/
-	find_replace_templatesets('header_welcomeblock_guest', '#' . preg_quote('{$lang->welcome_register}</a>') . '#i', '<a href="{$mybb->settings[\'bburl\']}/misc.php?action=steam_login"><img border="0" src="{$mybb->settings[\'bburl\']}/inc/plugins/steamlogin/steam_login_btn.png" alt="Login through Steam" style="padding: 3px;height: 27px"></a>');
+	//Overwritting Login Button while plugin is active
+	$plugin_templates = array(
+        "title" => 'header_welcomeblock_guest',
+        "template" => $db->escape_string('<!-- Continuation of div(class="upper") as opened in the header template -->
+		<span class="welcome">
+			<a href="{$mybb->settings[\'bburl\']}/misc.php?action=steam_login">
+				<img border="0" src="https://steamcommunity-a.akamaihd.net/public/images/signinthroughsteam/sits_01.png" alt="Login through Steam" style="height: 24px;margin-bottom: -5px;margin-top: -2px;">
+			</a>
+		</span>
+	</div>
+</div>
+		'),
+        "sid" => "-1",
+        "version" => $mybb->version + 1,
+        "dateline" => time()
+    );
 
+    $db->insert_query("templates", $plugin_templates);
+	
     $plugin_templates = array(
         "title" => 'steamlogin_profile_block',
         "template" => $db->escape_string('
@@ -266,11 +282,12 @@ function steamlogin_deactivate()
      */
     require_once MYBB_ROOT . 'inc/adminfunctions_templates.php';
 
-    find_replace_templatesets('header_welcomeblock_guest', '#' . preg_quote('<a href="{$mybb->settings[\'bburl\']}/misc.php?action=steam_login"><img border="0" src="{$mybb->settings[\'bburl\']}/inc/plugins/steamlogin/steam_login_btn.png" alt="Login through Steam" style="padding: 3px;height: 27px"></a>') . '#i', '');
     find_replace_templatesets('member_profile', '#' . preg_quote('{$steamlogin_profile_block}{$signature}') . '#i', '{$signature}');
     find_replace_templatesets('footer', '#' . preg_quote('Steam Login provided by <a href="http://www.calculator.tf">www.calculator.tf</a><br>Powered by <a href="http://www.steampowered.com">Steam</a>.') . '#i', '');
 
     $db->delete_query("templates", "title LIKE 'steamlogin_%' AND sid='-1'");
+	$db->delete_query("templates", "title LIKE 'steamlogin_%' AND sid='-1'");
+	$db->delete_query('templates', 'title = \'header_welcomeblock_guest\' AND sid=\'-1\'');
 
 } // close function steamlogin_deactivate
  
