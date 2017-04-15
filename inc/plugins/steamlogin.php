@@ -20,7 +20,7 @@ $plugins->add_hook("member_profile_start", "steamify_user_profile");
 $plugins->add_hook("usercp_password", "steam_account_linked");
 $plugins->add_hook("usercp_email", "steam_account_linked");
 $plugins->add_hook("usercp_email", "steam_account_linked");
-
+$plugins->add_hook("private_send_do_send", "steam_username_pm");
 
 /**
  *
@@ -38,10 +38,10 @@ function steamlogin_info()
 
 	return array(
 		"name"			=> "Steam Login",
-		"description"	=> "Allows the registration of accounts through Steam. (For support/issues please visit http://www.lastbullet.net)$curl_message",
-		"website"		=> "http://www.lastbullet.net",
+		"description"	=> "Allows the registration of accounts through Steam. (For support/issues please visit http://www.modworkshop.net)$curl_message",
+		"website"		=> "http://www.modworkshop.net",
 		"author"		=> "Tatsuto",
-		"authorsite"	=> "http://www.lastbullet.net",
+		"authorsite"	=> "http://www.modworkshop.net",
 		"version"		=> "1.8",
 		"guid" 			=> "",
 		"compatibility" => "18*"
@@ -604,4 +604,25 @@ function steam_account_linked()
 
 } // close function steam_account_linked
 
+
+/**
+ *
+ * Steam Username Convert for PM - 
+ * - - - - - - - - - - - - - - -
+ * @desc Redirects to steam_linked function.
+ * @since 1.6
+ * @version 1.6
+ *
+ */
+ 
+ function steam_username_pm()
+ {
+	global $mybb,$to;
+	 
+	require_once MYBB_ROOT.'inc/class_steam.php';
+	$steamhandler = new steam;
+	$to = explode(",", $_POST['to']);
+	foreach($to as &$row) $row = $steamhandler->steam_unicode_username($row);
+	$mybb->input['to'] = implode(",", $to);
+ }
 ?>
