@@ -14,6 +14,8 @@ php-bcmath<br/>
 php-curl<br/>
 php-json</strong><br/>
 <br/>
-<p>To run this plugin you need a steam api key which you can get at http://steamcommunity.com/dev</p>
+<p>To run this plugin you need a steam api key which can be requested at:<br/>
+http://steamcommunity.com/dev</p>
 -------------------------------<br/>
-The included plugin, dispname.php, was created and owned by ZiNgA BuRgA (http://mybbhacks.zingaburga.com/showthread.php?tid=259).
+The included plugin displaynames has been created by ZiNgA BuRgA at:<br/>
+http://mybbhacks.zingaburga.com/showthread.php?tid=259
