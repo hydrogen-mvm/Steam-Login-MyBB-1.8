@@ -1,7 +1,7 @@
 Steam-Login-MyBB-1.8
 ===================
 <br/>
-**Please Note!** - This plugin will only work for MyBB 1.8 and newer. (excluding 2.0 and newer.)<br/>
+<strong>Please Note! - This plugin will only work for MyBB 1.8 and newer. (excluding 2.0 and newer.)</strong><br/>
 <br/>
 This plugin will replace the base functionality of registering and logging in by default.<br/>
 <br/>
