@@ -3,7 +3,7 @@ Steam Login for MyBB 1.8
 <br/>
 <strong>Please Note! - This plugin will only work for MyBB 1.8 and newer.</strong><br/>
 <br/>
-This plugin will replace the base functionality of registering and logging in by default.<br/>
+This plugin will replace the base functionality of registering and logging in.<br/>
 <br/>
 To install copy all files to your server and enable both the 'Display Usernames' and 'Steam Login' plugins.<br/>
 Afterwards enter your steam api key in the steam login config.<br/>
