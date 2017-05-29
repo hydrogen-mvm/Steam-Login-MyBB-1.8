@@ -1,4 +1,4 @@
-Steam Login for MyBB 1.8.8 and NEWER
+Steam Login for MyBB 1.8.8 or NEWER
 ===================
 <br/>
 <strong>Please Note! - This plugin will only work for MyBB 1.8 and newer.</strong><br/>
