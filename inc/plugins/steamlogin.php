@@ -333,7 +333,7 @@ function steam_redirect()
 		    $SteamOpenID->identity = 'http://steamcommunity.com/openid';
 
 		    // Redirect directly to Steam.
-		    redirect($SteamOpenID->authUrl(), 'You are being redirect to Steam to authenticate your account for use on our website.', 'Login via Steam');
+		    redirect($SteamOpenID->authUrl(), 'Redirecting to Steam for User Authentication.', 'Login via Steam');
 
 		} // close else
 
