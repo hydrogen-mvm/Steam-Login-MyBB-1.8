@@ -121,7 +121,21 @@ class steam
 	function steam_unique_username($personaname, $steamid)
 	{
 
-		global $db;
+		global $db,$mybb;
+				
+		//Before we check against database we want to filter the name if enabled
+		require_once MYBB_ROOT."inc/class_parser.php";
+		$parser = new postParser;
+		$parser_options_filter_only = array(
+			'allow_mycode' => 0,
+			'allow_smilies' => 0,
+			'allow_imgcode' => 0,
+			'allow_videocode' => 0,
+			'allow_html' => 0,
+			'filter_badwords' => intval($mybb->settings['steamlogin_filter_username'])
+		);
+		//We are running encode inside parse and then decode it again because we do a more complete encode process a bit later.
+		$personaname = htmlspecialchars_decode($parser->parse_message($personaname, $parser_options_filter_only));
 				
 		//Encoding unicode and making sql save.
 		$personaname = $this->steam_unicode_username($personaname);
@@ -234,7 +248,7 @@ class steam
 				$stringBuilder .= $char;
 			}
 		}
-
+		
 		return $stringBuilder;
 	}
 	

@@ -128,6 +128,16 @@ function steamlogin_activate()
         "disporder" => 5,
         "gid" => $gid
     );
+	
+	$steamlogin_username_badwords = array(
+		"name"			=> "steamlogin_filter_username",
+		"title"			=> "Filter Bad Words in usernames?",
+		"description"	=> "Filters bad words in usernames during sign-up process and log-in process (if update usernames is enabled). Does not affect current usernames until next log-in (if update usernames is enabled).",
+		"optionscode"	=> "yesno",
+		"value"			=> 0,
+		"disporder"		=> 6,
+		"gid"			=> $gid
+	);
 
     // Insert our Settings.
     $db->insert_query("settings", $steamlogin_api_key_setting);
@@ -135,6 +145,7 @@ function steamlogin_activate()
     $db->insert_query("settings", $steamlogin_update_avatar_setting);
     $db->insert_query("settings", $steamlogin_avatar_size_setting);
     $db->insert_query("settings", $steamlogin_required_field_setting);
+	$db->insert_query("settings", $steamlogin_username_badwords);
 
     // Rebuild our settings to show our new category.
     rebuild_settings();
