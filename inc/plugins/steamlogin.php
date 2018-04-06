@@ -145,7 +145,7 @@ function steamlogin_activate()
     $db->insert_query("settings", $steamlogin_update_avatar_setting);
     $db->insert_query("settings", $steamlogin_avatar_size_setting);
     $db->insert_query("settings", $steamlogin_required_field_setting);
-	$db->insert_query("settings", $steamlogin_username_badwords);
+    $db->insert_query("settings", $steamlogin_username_badwords);
 
     // Rebuild our settings to show our new category.
     rebuild_settings();
@@ -552,7 +552,7 @@ function steamify_user_profile()
         $steam_verified = 'Yes';
 
 		// Get our steam status
-        $steam_status = '<a href="steam://friends/add/'.$steamid_64.'">Click here to add this user on Steam!</a>';
+        $steam_status = '<a href="steam://openurl/http://steamcommunity.com/profiles/'.$steamid_64.'">Click here to open this profile in Steam.</a>';
 		
         // Create a link for SteamRep.
         $steamrep_link = '<a href="http://www.steamrep.com/profiles/'.$steamid_64.'" target="_blank">www.steamrep.com/profiles/'.$steamid_64.'</a>';
