@@ -699,15 +699,15 @@ class LightOpenID
         }
 		
 		// Stolen from: https://github.com/xPaw/SteamOpenID.php/blob/41137e034d7224c4790316ba48ffd5a3e2691a47/SteamOpenID.php#L62
-		if( $this->data[ 'openid_claimed_id' ] !== $this->data[ 'openid_identity' ]
-		|| $this->data[ 'openid_op_endpoint' ] !== 'https://steamcommunity.com/openid/login'
-		|| $this->data[ 'openid_ns' ] !== 'http://specs.openid.net/auth/2.0'
-		|| strpos( $this->data[ 'openid_return_to' ], $this->returnUrl ) !== 0
-		|| preg_match( '/^https?:\/\/steamcommunity.com\/openid\/id\/(7656119[0-9]{10})\/?$/', $this->data[ 'openid_identity' ], $CommunityID ) !== 1
-		)
-		{
-			return false;
-		}
+        if( $this->data[ 'openid_claimed_id' ] !== $this->data[ 'openid_identity' ]
+        || $this->data[ 'openid_op_endpoint' ] !== 'https://steamcommunity.com/openid/login'
+        || $this->data[ 'openid_ns' ] !== 'http://specs.openid.net/auth/2.0'
+        || strpos( $this->data[ 'openid_return_to' ], $this->returnUrl ) !== 0
+        || preg_match( '/^https?:\/\/steamcommunity.com\/openid\/id\/(7656119[0-9]{10})\/?$/', $this->data[ 'openid_identity' ], $CommunityID ) !== 1
+        )
+        {
+            return false;
+        }
 
         $server = $this->discover($this->claimed_id);
 
