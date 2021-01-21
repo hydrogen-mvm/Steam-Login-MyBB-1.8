@@ -169,7 +169,7 @@ function steamlogin_activate()
         "template" => $db->escape_string('<!-- Continuation of div(class="upper") as opened in the header template -->
 		<span class="welcome">
 			<a href="{$mybb->settings[\'bburl\']}/misc.php?action=steam_login">
-				<img border="0" src="https://steamcommunity-a.akamaihd.net/public/images/signinthroughsteam/sits_01.png" alt="Login through Steam" style="height: 24px;margin-bottom: -5px;margin-top: -2px;">
+				<img border="0" src="https://raw.githubusercontent.com/hydrogen-mvm/Steam-Login-MyBB-1.8/1.8/steam_button.png" alt="Login through Steam" style="height: 24px;margin-bottom: -5px;margin-top: -2px;">
 			</a>
 		</span>
 	</div>
