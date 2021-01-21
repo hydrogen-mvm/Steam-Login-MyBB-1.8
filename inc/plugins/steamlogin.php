@@ -258,7 +258,7 @@ function steamlogin_activate()
     find_replace_templatesets('member_profile', '#' . preg_quote('{$signature}') . '#i', '{$steamlogin_profile_block}{$signature}');
 
     // This is released as Open Source. Although this notice isn't required to be kept, i'd appreciate if you could show your support by keeping it here.
-    find_replace_templatesets('footer', '#' . preg_quote('<!-- End powered by -->') . '#i', 'Steam Login provided by <a href="http://www.calculator.tf">www.calculator.tf</a><br>Powered by <a href="http://www.steampowered.com">Steam</a>.<!-- End powered by -->');
+    find_replace_templatesets('footer', '#' . preg_quote('<!-- End powered by -->') . '#i', 'Steam Login provided by <a href="https://github.com/floofytsuna/">floofytsuna</a>.<br>Powered by <a href="http://www.steampowered.com">Steam</a>.<!-- End powered by -->');
 
 } // close function steamlogin_activate
 
